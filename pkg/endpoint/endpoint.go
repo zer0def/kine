@@ -13,6 +13,7 @@ import (
 	"github.com/k3s-io/kine/pkg/drivers/nats"
 	"github.com/k3s-io/kine/pkg/drivers/pgsql"
 	"github.com/k3s-io/kine/pkg/drivers/sqlite"
+	"github.com/k3s-io/kine/pkg/drivers/yugabytedb"
 	"github.com/k3s-io/kine/pkg/metrics"
 	"github.com/k3s-io/kine/pkg/server"
 	"github.com/k3s-io/kine/pkg/tls"
@@ -27,14 +28,15 @@ import (
 )
 
 const (
-	KineSocket       = "unix://kine.sock"
-	SQLiteBackend    = "sqlite"
-	DQLiteBackend    = "dqlite"
-	ETCDBackend      = "etcd3"
-	JetStreamBackend = "jetstream"
-	NATSBackend      = "nats"
-	MySQLBackend     = "mysql"
-	PostgresBackend  = "postgres"
+	KineSocket        = "unix://kine.sock"
+	SQLiteBackend     = "sqlite"
+	DQLiteBackend     = "dqlite"
+	ETCDBackend       = "etcd3"
+	JetStreamBackend  = "jetstream"
+	NATSBackend       = "nats"
+	MySQLBackend      = "mysql"
+	PostgresBackend   = "postgres"
+	YugabyteDBBackend = "yugabytedb"
 )
 
 type Config struct {
@@ -251,6 +253,8 @@ func getKineStorageBackend(ctx context.Context, driver, dsn string, cfg Config) 
 		backend, err = nats.NewLegacy(ctx, dsn, cfg.BackendTLSConfig)
 	case NATSBackend:
 		backend, err = nats.New(ctx, dsn, cfg.BackendTLSConfig)
+	case YugabyteDBBackend:
+		backend, err = yugabytedb.New(ctx, dsn, cfg.BackendTLSConfig, cfg.ConnectionPoolConfig, cfg.MetricsRegisterer)
 	default:
 		return false, nil, fmt.Errorf("storage backend is not defined")
 	}
