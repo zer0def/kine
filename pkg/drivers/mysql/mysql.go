@@ -26,6 +26,13 @@ const (
 
 var (
 	schema = []string{
+		`CREATE TABLE IF NOT EXISTS kine_leases
+			(
+				id BIGINT UNSIGNED,
+				started DATETIME(0) NOT NULL,
+				ends DATETIME(0) NOT NULL,
+				PRIMARY KEY (id)
+			);`,
 		`CREATE TABLE IF NOT EXISTS kine
 			(
 				id BIGINT UNSIGNED AUTO_INCREMENT,
@@ -34,7 +41,7 @@ var (
 				deleted INTEGER,
 				create_revision BIGINT UNSIGNED,
 				prev_revision BIGINT UNSIGNED,
-				lease INTEGER,
+				lease BIGINT UNSIGNED REFERENCES kine_leases(id) ON DELETE CASCADE,
 				value MEDIUMBLOB,
 				old_value MEDIUMBLOB,
 				PRIMARY KEY (id)
