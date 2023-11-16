@@ -16,6 +16,17 @@ func isCreate(txn *etcdserverpb.TxnRequest) *etcdserverpb.PutRequest {
 		txn.Success[0].GetRequestPut() != nil {
 		return txn.Success[0].GetRequestPut()
 	}
+
+	// flannel subnet-create case
+	if len(txn.Compare) == 1 &&
+		txn.Compare[0].Target == etcdserverpb.Compare_VERSION &&
+		txn.Compare[0].Result == etcdserverpb.Compare_EQUAL &&
+		txn.Compare[0].GetVersion() == 0 &&
+		len(txn.Failure) == 0 &&
+		len(txn.Success) == 1 &&
+		txn.Success[0].GetRequestPut() != nil {
+		return txn.Success[0].GetRequestPut()
+	}
 	return nil
 }
 

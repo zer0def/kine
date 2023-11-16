@@ -108,7 +108,11 @@ func (k *KVServerBridge) Put(ctx context.Context, r *etcdserverpb.PutRequest) (*
 }
 
 func (k *KVServerBridge) DeleteRange(ctx context.Context, r *etcdserverpb.DeleteRangeRequest) (*etcdserverpb.DeleteRangeResponse, error) {
-	return nil, unsupported("delete")
+	res, err := k.limited.DeleteRange(ctx, r)
+	if err != nil {
+		logrus.Errorf("error in deleteRange %s: %v", r, err)
+	}
+	return res, err
 }
 
 func (k *KVServerBridge) Txn(ctx context.Context, r *etcdserverpb.TxnRequest) (*etcdserverpb.TxnResponse, error) {
