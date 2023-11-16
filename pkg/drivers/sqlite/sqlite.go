@@ -22,6 +22,12 @@ import (
 
 var (
 	schema = []string{
+		`CREATE TABLE IF NOT EXISTS kine_leases
+			(
+				id UNSIGNED BIG INT PRIMARY KEY,
+				started INTEGER NOT NULL,
+				ends INTEGER NOT NULL
+			);`,
 		`CREATE TABLE IF NOT EXISTS kine
 			(
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +36,7 @@ var (
 				deleted INTEGER,
 				create_revision INTEGER,
 				prev_revision INTEGER,
-				lease INTEGER,
+				lease UNSIGNED BIG INT CHECK (lease > 0) REFERENCES kine_leases(id) ON DELETE CASCADE,
 				value BLOB,
 				old_value BLOB
 			)`,
