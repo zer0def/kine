@@ -28,7 +28,14 @@ const (
 )
 
 var (
+	// right(sha512(now()::text::bytea)::text, -1)::bit(63)::bigint as kine_leases pk
 	schema = []string{
+		`CREATE TABLE IF NOT EXISTS kine_leases
+			(
+				id BIGINT PRIMARY KEY,
+				started TIMESTAMP(0) NOT NULL,
+				ends TIMESTAMP(0) NOT NULL
+			);`,
 		`CREATE TABLE IF NOT EXISTS kine
  			(
 				id BIGSERIAL PRIMARY KEY,
@@ -37,7 +44,7 @@ var (
 				deleted INTEGER,
 				create_revision BIGINT,
 				prev_revision BIGINT,
- 				lease INTEGER,
+				lease BIGINT CHECK (lease > 0) REFERENCES kine_leases(id) ON DELETE CASCADE,
  				value bytea,
  				old_value bytea
  			);`,
